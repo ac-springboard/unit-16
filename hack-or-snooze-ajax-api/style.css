@@ -226,3 +226,10 @@ form > hr {
     margin: 8px auto;
   }
 }
+
+.article-favorite{
+  color: blue;
+  /*stroke: blue;*/
+  /*background: linear-gradient(to right, blue 50%, grey 50% );*/
+  content: "a"
+  }

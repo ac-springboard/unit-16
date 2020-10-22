@@ -65,7 +65,18 @@ class User {
 
     // these are all set to defaults, not passed in by the constructor
     this.loginToken = "";
-    this.favorites = [];
+    this.favorites = [
+      {
+        author   : "Elie Schoppik",
+        createdAt: "2020-10-22T00:00:21.843Z",
+        favorite : false,
+        storyId  : "ca68c0f9-9dd8-4651-aadb-5739df62146a",
+        title    : "‘Buffett Indicator’ Warns Stocks Doomed for Worse Crash Than 2008",
+        updatedAt: "2020-10-22T00:00:21.843Z",
+        url      : "https://www.ccn.com/buffett-indicator-warns-stocks-doomed-worse-crash-than-2008/",
+        username : "etanois"
+      }
+    ];
     this.ownStories = [];
   }
 
@@ -172,5 +183,6 @@ class Story {
     this.storyId = storyObj.storyId;
     this.createdAt = storyObj.createdAt;
     this.updatedAt = storyObj.updatedAt;
+    this.favorite = false;
   }
 }
