@@ -89,6 +89,14 @@ $(async function () {
 		$allStoriesList.show();
 	});
 
+	$('#all-articles-list').on( 'click', '.fa-star', async function(e) {
+		console.log('e.target', e.target);
+		const newClass = suitch( e.target.classList, "far", "fas");
+		const method = newClass === 'far' ? 'delete' :'post';
+		const storyId = e.target.parentElement.id;
+		await StoryList.toggleFavorite( method, currentUser.username, storyId );
+	});
+
 	/**
 	 * On page load, checks local storage to see if the user is already logged in.
 	 * Renders page information accordingly.
