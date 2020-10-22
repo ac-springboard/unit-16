@@ -74,9 +74,9 @@ $(async function () {
 
 	$navLogin.on("click", function () {
 		// Show the Login and Create Account Forms
+		$allStoriesList.toggle();
 		$loginForm.slideToggle();
 		$createAccountForm.slideToggle();
-		$allStoriesList.toggle();
 	});
 
 	/**

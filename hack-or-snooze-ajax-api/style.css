@@ -4,6 +4,7 @@ html {
 
 body {
   margin: 8px 7.5vw;
+  background-color: grey;
 }
 
 h1 {
@@ -35,7 +36,9 @@ a:hover {
   display: none;
 }
 
-
+.superHidden{
+  display: none!important;
+  }
 
 nav {
   display: flex;
@@ -227,9 +230,13 @@ form > hr {
   }
 }
 
-.article-favorite{
-  color: blue;
+.article-favorite {
+  color : blue;
   /*stroke: blue;*/
   /*background: linear-gradient(to right, blue 50%, grey 50% );*/
-  content: "a"
   }
+
+article{
+  background-color: #cccccc;
+  }
+
