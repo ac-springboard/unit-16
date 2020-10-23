@@ -36,10 +36,6 @@ a:hover {
   display: none;
 }
 
-.superHidden{
-  display: none!important;
-  }
-
 nav {
   display: flex;
   background-color: #ff6600;
@@ -230,13 +226,52 @@ form > hr {
   }
 }
 
-.article-favorite {
-  color : blue;
-  /*stroke: blue;*/
-  /*background: linear-gradient(to right, blue 50%, grey 50% );*/
+.icon-submit {
+  color : purple;
+  }
+
+.icon-favorites {
+  color : teal;
+  }
+
+.icon-my-stories{
+  color : #a7a72e;
   }
 
 article{
   background-color: #cccccc;
   }
 
+.btn {
+  background-color: #cccccc;
+  border: none;
+  color: black;
+  padding: 1vw 1vw;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 0.5vw;
+  }
+
+.btn:hover{
+  box-shadow: 0.3vw 0.3vw 0.5vw rgba( 0, 40, 40, 0.3);
+  }
+
+.super-hidden{
+  display: none!important;
+  }
+
+.buttons{
+  margin-left: auto;
+  }
+
+#nav-logout{
+  font-size: 0.9em;
+  }
+
+.icon-sign-out{
+  color: firebrick;
+  }
+
+.icon-sign-out:hover{
+  color: darkred;
+  }

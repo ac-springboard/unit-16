@@ -2,10 +2,11 @@ $(async function () {
 	// cache some selectors we'll be using quite a bit
 	const $allStoriesList    = $("#all-articles-list");
 	const $submitForm        = $("#submit-form");
+	const $ownStories        = $("#my-articles");
+	const $favoritedArticles = $("#favorited-articles");
 	const $filteredArticles  = $("#filtered-articles");
 	const $loginForm         = $("#login-form");
 	const $createAccountForm = $("#create-account-form");
-	const $ownStories        = $("#my-articles");
 	const $navLogin          = $("#nav-login");
 	const $navLogOut         = $("#nav-logout");
 
@@ -89,12 +90,12 @@ $(async function () {
 		$allStoriesList.show();
 	});
 
-	$('#all-articles-list').on( 'click', '.fa-star', async function(e) {
-		console.log('e.target', e.target);
-		const newClass = suitch( e.target.classList, "far", "fas");
-		const method = newClass === 'far' ? 'delete' :'post';
-		const storyId = e.target.parentElement.id;
-		await StoryList.toggleFavorite( method, currentUser.username, storyId );
+	$('#all-articles-list').on('click', '.fa-star', async function (e) {
+		clog('e.target', e.target);
+		const newClass = suitch(e.target.classList, "far", "fas");
+		const method   = newClass === 'far' ? 'delete' : 'post';
+		const storyId  = e.target.parentElement.id;
+		await StoryList.toggleFavorite(method, currentUser.username, storyId);
 	});
 
 	/**
@@ -118,8 +119,6 @@ $(async function () {
 		}
 	}
 
-
-
 	/**
 	 * A rendering function to run to reset the forms and hide the login info
 	 */
@@ -128,6 +127,9 @@ $(async function () {
 		// hide the forms for logging in and signing up
 		$loginForm.hide();
 		$createAccountForm.hide();
+
+		// show favorites link
+
 
 		// reset those forms
 		$loginForm.trigger("reset");
@@ -154,23 +156,23 @@ $(async function () {
 		storyList               = storyListInstance;
 		// const favStory = storyList.stories.filter( (s) => s.storyId === "ca68c0f9-9dd8-4651-aadb-5739df62146a");
 		// const favStory = storyList.stories.filter( (s) => s.author === "Elie Schoppik");
-		// console.log( 'favStory', favStory );
+		// clog( 'favStory', favStory );
 		// Object.key
 		// let favStory;
-		console.log( 'currentUser:', currentUser );
-		if ( currentUser ) {
+		clog('currentUser:', currentUser);
+		if (currentUser) {
 			currentUser.favorites.forEach(fav => {
 				storyList.stories.some((story) => {
 					// favStory = storyList.stories.filter( (s) => s.storyId === fav.storyId );
 					if (story.storyId === fav.storyId) {
 						story.favorite = true;
-						console.log( story );
+						clog(story);
 						return;
 					}
 				});
 			});
 		}
-		console.log( 'storyList', storyList.stories );
+		clog('storyList', storyList.stories);
 
 		// empty out that part of the page
 		$allStoriesList.empty();
@@ -180,14 +182,9 @@ $(async function () {
 			const result = generateStoryHTML(story);
 			$allStoriesList.append(result);
 		}
-		console.log( "$allStoriesList", $allStoriesList );
+		clog("$allStoriesList", $allStoriesList);
 	}
 
-	// function setFavorites(){
-	//
-	// 	console.log( $allStoriesList);
-	// 	console.log( currentUser );
-	//
 
 	/**
 	 * A function to render HTML for an individual Story instance
@@ -200,7 +197,7 @@ $(async function () {
 		// render story markup
 		const storyMarkup = $(`
       <li id="${story.storyId}">
-        <small class="${favClass} fa-star article-favorite"></small>
+        <small class="${favClass} fa-star icon-favorites"></small>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
