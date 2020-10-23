@@ -85,17 +85,25 @@ $(async function () {
 	 */
 
 	$("body").on("click", "#nav-all", async function () {
-		hideElements();
+		hideOrEmptyElements();
 		await generateStories();
 		$allStoriesList.show();
 	});
 
-	$('#all-articles-list').on('click', '.fa-star', async function (e) {
+	$('.toggle-favorite').on('click', '.fa-star', async function (e) {
 		clog('e.target', e.target);
 		const newClass = suitch(e.target.classList, "far", "fas");
-		const method   = newClass === 'far' ? 'delete' : 'post';
+		const method   = newClass === 'far' ? 'DELETE' : 'POST';
 		const storyId  = e.target.parentElement.id;
-		await StoryList.toggleFavorite(method, currentUser.username, storyId);
+		const response = await StoryList.toggleFavorite(method, storyId);
+		currentUser.setFavorites( response.data.user.favorites );
+	});
+
+	$('#nav-favorites').on('click', async (e) => {
+		hideOrEmptyElements();
+		await generateFavorites();
+		$favoritedArticles.show();
+		clog( $favoritedArticles );
 	});
 
 	/**
@@ -128,9 +136,6 @@ $(async function () {
 		$loginForm.hide();
 		$createAccountForm.hide();
 
-		// show favorites link
-
-
 		// reset those forms
 		$loginForm.trigger("reset");
 		$createAccountForm.trigger("reset");
@@ -144,11 +149,17 @@ $(async function () {
 		showNavForLoggedInUser();
 	}
 
+	async function generateFavorites(){
+		const storyListInstance = await StoryList.getFavorites( currentUser );
+		const storyList = storyListInstance;
+		$favoritedArticles.empty();
+		populateHistoryListHtml(storyList, $favoritedArticles );
+	}
+
 	/**
 	 * A rendering function to call the StoryList.getStories static method,
 	 *  which will generate a storyListInstance. Then render it.
 	 */
-
 	async function generateStories() {
 		// get an instance of StoryList
 		const storyListInstance = await StoryList.getStories();
@@ -178,13 +189,21 @@ $(async function () {
 		$allStoriesList.empty();
 
 		// loop through all of our stories and generate HTML for them
-		for (let story of storyList.stories) {
-			const result = generateStoryHTML(story);
-			$allStoriesList.append(result);
-		}
+		populateHistoryListHtml(storyList, $allStoriesList );
+		// for (let story of storyList.stories) {
+		// 	const result = generateStoryHTML(story);
+		// 	$allStoriesList.append(result);
+		// }
 		clog("$allStoriesList", $allStoriesList);
 	}
 
+	function populateHistoryListHtml( storyList, $element ){
+		let result;
+		for (let story of storyList.stories) {
+			result = generateStoryHTML(story);
+			$element.append(result);
+		}
+	}
 
 	/**
 	 * A function to render HTML for an individual Story instance
@@ -197,7 +216,7 @@ $(async function () {
 		// render story markup
 		const storyMarkup = $(`
       <li id="${story.storyId}">
-        <small class="${favClass} fa-star icon-favorites"></small>
+        <small class="${favClass} fa-star icon icon-favorites"></small>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -212,16 +231,20 @@ $(async function () {
 
 	/* hide all elements in elementsArr */
 
-	function hideElements() {
-		const elementsArr = [
+	function hideOrEmptyElements() {
+		const toHide = [
 			$submitForm,
-			$allStoriesList,
-			$filteredArticles,
-			$ownStories,
 			$loginForm,
 			$createAccountForm
 		];
-		elementsArr.forEach($elem => $elem.hide());
+		const toEmpty = [
+			$allStoriesList,
+			$filteredArticles,
+			$favoritedArticles,
+			$ownStories
+		];
+		toHide.forEach($elem => $elem.hide());
+		toEmpty.forEach($elem => $elem.empty());
 	}
 
 	function showNavForLoggedInUser() {

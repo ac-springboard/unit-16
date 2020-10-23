@@ -1,8 +1,0 @@
-GET https://hack-or-snooze-v3.herokuapp.com/users/almircampos
-Accept: */*
-Cache-Control: no-cache
-content-type: application/json; charset=utf-8
-
-{
-"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsbWlyY2FtcG9zIiwiaWF0IjoxNjAzMzMwMDc4fQ.TeR0gVe-6O6oZjA_PRUhtsf86JuMIxXlqxUS5zcpQbc"
-}

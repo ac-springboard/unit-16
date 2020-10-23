@@ -35,6 +35,30 @@ class StoryList {
 		return storyList;
 	}
 
+	static async getFavorites() {
+		const method    = 'GET';
+		const token     = await localStorage.getItem("token");
+		const username  = await localStorage.getItem("username");
+		const url       = `${BASE_URL}/users/${username}`;
+		const response  = await axios({
+			method,
+			url,
+			headers: {
+				Accept         : "*/*",
+				"Cache-Control": "no-cache",
+				"content-type" : "application/json"
+			},
+			params   : {token}
+		});
+		const favorites = response.data.user.favorites.map(story => {
+			new Story(story);
+			story.favorite = true;
+			return story;
+		});
+		const storyList = new StoryList(favorites);
+		return storyList;
+	}
+
 	/**
 	 * Method to make a POST request to /stories and add the new story to the list
 	 * - user - the current instance of User who will post the story
@@ -49,8 +73,9 @@ class StoryList {
 		// the script.js file where it will be appended to the DOM
 	}
 
-	static async toggleFavorite(method, username, storyId) {
+	static async toggleFavorite(method, storyId) {
 		const token    = localStorage.getItem("token");
+		const username = localStorage.getItem("username");
 		const url      = `${BASE_URL}/users/${username}/favorites/${storyId}`;
 		const response = await axios({
 			method,
@@ -62,7 +87,10 @@ class StoryList {
 			},
 			data   : {token}
 		});
+		// Update currentUser.favorites
+
 		clog('toggleFavorite/response', response);
+		return response;
 	}
 }
 
@@ -92,6 +120,10 @@ class User {
 	 * - password: a new password
 	 * - name: the user's full name
 	 */
+
+	setFavorites( favorites ){
+		this.favorites = favorites;
+	}
 
 	static async create(username, password, name) {
 		const response = await axios.post(`${BASE_URL}/signup`, {
