@@ -35,19 +35,21 @@
 				<i class="icon-sign-out fas fa-sign-out-alt" title="Sign out"></i>
 			</a>
 		</nav>
+		<div id="sections">
 		<section class="articles-container container">
 			<form action="" class="hidden" id="submit-form">
 				<div>
 					<label for="author">author</label>
-					<input id="author" required type="text" placeholder="author name">
+					<input id="author" class="add-story-input" required type="text" placeholder="author name" value="a">
 				</div>
 				<div>
 					<label for="title">title</label>
-					<input id="title" required type="text" placeholder="article title">
+					<input id="title" class="add-story-input" required type="text" placeholder="article title" value="b">
 				</div>
 				<div>
 					<label for="url">url</label>
-					<input id="url" required type="url" placeholder="article url">
+					<input id="url" class="add-story-input" required type="url" placeholder="article url"
+								 value="https://example.com">
 				</div>
 				<button type="submit">submit</button>
 				<hr>
@@ -119,6 +121,7 @@
 				<div id="profile-account-date">Account Created:</div>
 			</section>
 		</section>
+		</div>
 	</body>
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 					crossorigin="anonymous"></script>

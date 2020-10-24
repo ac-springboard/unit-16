@@ -48,7 +48,7 @@ class StoryList {
 				"Cache-Control": "no-cache",
 				"content-type" : "application/json"
 			},
-			params   : {token}
+			params : {token}
 		});
 		const favorites = response.data.user.favorites.map(story => {
 			new Story(story);
@@ -57,20 +57,6 @@ class StoryList {
 		});
 		const storyList = new StoryList(favorites);
 		return storyList;
-	}
-
-	/**
-	 * Method to make a POST request to /stories and add the new story to the list
-	 * - user - the current instance of User who will post the story
-	 * - newStory - a new story object for the API with title, author, and url
-	 *
-	 * Returns the new story object
-	 */
-
-	async addStory(user, newStory) {
-		// TODO - Implement this functions!
-		// this function should return the newly created story so it can be used in
-		// the script.js file where it will be appended to the DOM
 	}
 
 	static async toggleFavorite(method, storyId) {
@@ -90,6 +76,34 @@ class StoryList {
 		// Update currentUser.favorites
 
 		clog('toggleFavorite/response', response);
+		return response;
+	}
+
+	/**
+	 * Method to make a POST request to /stories and add the new story to the list
+	 * - user - the current instance of User who will post the story
+	 * - newStory - a new story object for the API with title, author, and url
+	 *
+	 * Returns the new story object
+	 */
+
+	static async addStory(storyObj) {
+		// TODO - Implement this functions!
+		// this function should return the newly created story so it can be used in
+		// the script.js file where it will be appended to the DOM
+		const token = await localStorage.getItem("token");
+		const data = {
+			token,
+			story: storyObj
+		};
+		const method = 'POST';
+		const url = `${BASE_URL}/stories`;
+		const headers = {
+			Accept         : "*/*",
+				"Cache-Control": "no-cache",
+				"content-type" : "application/json"
+		};
+		const response  = await axios({ method, url, headers, data });
 		return response;
 	}
 }
@@ -121,7 +135,7 @@ class User {
 	 * - name: the user's full name
 	 */
 
-	setFavorites( favorites ){
+	setFavorites(favorites) {
 		this.favorites = favorites;
 	}
 

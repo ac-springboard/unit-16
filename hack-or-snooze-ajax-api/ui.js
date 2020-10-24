@@ -84,26 +84,45 @@ $(async function () {
 	 * Event handler for Navigation to Homepage
 	 */
 
-	$("body").on("click", "#nav-all", async function () {
+	$("body").on("click", "#nav-all", async function (e) {
+		e.preventDefault();
 		hideOrEmptyElements();
 		await generateStories();
 		$allStoriesList.show();
 	});
 
 	$('.toggle-favorite').on('click', '.fa-star', async function (e) {
+		e.preventDefault();
 		clog('e.target', e.target);
 		const newClass = suitch(e.target.classList, "far", "fas");
 		const method   = newClass === 'far' ? 'DELETE' : 'POST';
 		const storyId  = e.target.parentElement.id;
 		const response = await StoryList.toggleFavorite(method, storyId);
-		currentUser.setFavorites( response.data.user.favorites );
+		currentUser.setFavorites(response.data.user.favorites);
 	});
 
 	$('#nav-favorites').on('click', async (e) => {
+		e.preventDefault();
 		hideOrEmptyElements();
 		await generateFavorites();
 		$favoritedArticles.show();
-		clog( $favoritedArticles );
+		clog($favoritedArticles);
+	});
+
+	$('#nav-submit').on('click', (e) => {
+		e.preventDefault();
+		$submitForm.toggle(500, 'linear');
+	});
+
+	$submitForm.on('submit', async function (e) {
+		e.preventDefault();
+		const storyObj = {};
+		$('.add-story-input').each(function () {
+			storyObj[this.id] = this.value;
+		});
+		const newStory = await StoryList.addStory(storyObj);
+		console.log( newStory );
+		// const stopHere = true;
 	});
 
 	/**
@@ -149,11 +168,11 @@ $(async function () {
 		showNavForLoggedInUser();
 	}
 
-	async function generateFavorites(){
-		const storyListInstance = await StoryList.getFavorites( currentUser );
-		const storyList = storyListInstance;
+	async function generateFavorites() {
+		const storyListInstance = await StoryList.getFavorites(currentUser);
+		const storyList         = storyListInstance;
 		$favoritedArticles.empty();
-		populateHistoryListHtml(storyList, $favoritedArticles );
+		populateHistoryListHtml(storyList, $favoritedArticles);
 	}
 
 	/**
@@ -189,7 +208,7 @@ $(async function () {
 		$allStoriesList.empty();
 
 		// loop through all of our stories and generate HTML for them
-		populateHistoryListHtml(storyList, $allStoriesList );
+		populateHistoryListHtml(storyList, $allStoriesList);
 		// for (let story of storyList.stories) {
 		// 	const result = generateStoryHTML(story);
 		// 	$allStoriesList.append(result);
@@ -197,7 +216,7 @@ $(async function () {
 		clog("$allStoriesList", $allStoriesList);
 	}
 
-	function populateHistoryListHtml( storyList, $element ){
+	function populateHistoryListHtml(storyList, $element) {
 		let result;
 		for (let story of storyList.stories) {
 			result = generateStoryHTML(story);
@@ -232,7 +251,7 @@ $(async function () {
 	/* hide all elements in elementsArr */
 
 	function hideOrEmptyElements() {
-		const toHide = [
+		const toHide  = [
 			$submitForm,
 			$loginForm,
 			$createAccountForm
