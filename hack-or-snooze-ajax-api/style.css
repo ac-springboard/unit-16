@@ -264,7 +264,7 @@ article{
   display: none!important;
   }
 
-.buttons{
+.nav-buttons{
   margin-left: auto;
   }
 
@@ -278,4 +278,27 @@ article{
 
 .icon-sign-out:hover{
   color: darkred;
+  }
+
+#all-articles-list>li, #favorited-articles>li{
+  position: relative;
+  padding: 0.2vw;
+  }
+
+.highlighted-story{
+    border-left: 0.5vw solid #ff6600;
+    margin-left: -0.5vw !important;
+  }
+
+.remove-story{
+  color: #999999;
+  font-size: 1.0em;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  }
+
+.remove-story:hover{
+  color: red;
   }

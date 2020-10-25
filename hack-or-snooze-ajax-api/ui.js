@@ -9,6 +9,7 @@ $(async function () {
 	const $createAccountForm = $("#create-account-form");
 	const $navLogin          = $("#nav-login");
 	const $navLogOut         = $("#nav-logout");
+	const $navButtons        = $(".nav-buttons");
 
 	// global storyList variable
 	let storyList = null;
@@ -115,15 +116,37 @@ $(async function () {
 	});
 
 	$submitForm.on('submit', async function (e) {
-		e.preventDefault();
+		// e.preventDefault();
 		const storyObj = {};
 		$('.add-story-input').each(function () {
 			storyObj[this.id] = this.value;
 		});
 		const newStory = await StoryList.addStory(storyObj);
-		console.log( newStory );
+		console.log(newStory);
 		// const stopHere = true;
 	});
+
+
+	function addListenerToRemoveStory() {
+		$('.remove-story').on('mouseenter', function () {
+			this.parentElement.classList.add('highlighted-story');
+		});
+
+		$('.remove-story').on('mouseleave', function () {
+			this.parentElement.classList.remove('highlighted-story');
+		});
+
+		$('.remove-story').on('click', async function (e) {
+			e.preventDefault();
+			await StoryList.removeStory(this.parentElement.id);
+			this.parentElement.remove();
+		});
+	}
+
+	// This didn't work well
+	// $('.remove-story').on('mouseleave', function(){
+	// 	this.parentElement.classList.toggle('highlighted-story');
+	// });
 
 	/**
 	 * On page load, checks local storage to see if the user is already logged in.
@@ -143,6 +166,8 @@ $(async function () {
 
 		if (currentUser) {
 			showNavForLoggedInUser();
+			$navButtons.show();
+			// $('.remove-story').removeClass('hidden');
 		}
 	}
 
@@ -154,6 +179,7 @@ $(async function () {
 		// hide the forms for logging in and signing up
 		$loginForm.hide();
 		$createAccountForm.hide();
+		$navButtons.show();
 
 		// reset those forms
 		$loginForm.trigger("reset");
@@ -162,6 +188,7 @@ $(async function () {
 		// show the stories
 		$allStoriesList.empty();
 		await generateStories();
+		$('.remove-story').removeClass('hidden');
 		$allStoriesList.show();
 
 		// update the navigation bar
@@ -184,11 +211,6 @@ $(async function () {
 		const storyListInstance = await StoryList.getStories();
 		// update our global variable
 		storyList               = storyListInstance;
-		// const favStory = storyList.stories.filter( (s) => s.storyId === "ca68c0f9-9dd8-4651-aadb-5739df62146a");
-		// const favStory = storyList.stories.filter( (s) => s.author === "Elie Schoppik");
-		// clog( 'favStory', favStory );
-		// Object.key
-		// let favStory;
 		clog('currentUser:', currentUser);
 		if (currentUser) {
 			currentUser.favorites.forEach(fav => {
@@ -222,6 +244,9 @@ $(async function () {
 			result = generateStoryHTML(story);
 			$element.append(result);
 		}
+		if ( currentUser ) {
+			addListenerToRemoveStory();
+		}
 	}
 
 	/**
@@ -229,8 +254,9 @@ $(async function () {
 	 */
 
 	function generateStoryHTML(story) {
-		let hostName = getHostName(story.url);
-		let favClass = !currentUser ? "hidden" : story.favorite ? "fas" : "far";
+		const hostName = getHostName(story.url);
+		const favClass = !currentUser ? "hidden" : story.favorite ? "fas" : "far";
+		const removeHidden = !currentUser ? 'hidden' : '';
 		// 	const favClass = 'far';
 		// render story markup
 		const storyMarkup = $(`
@@ -241,6 +267,7 @@ $(async function () {
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
+        <i class="${removeHidden} remove-story fas fa-trash-alt"></i>
         <small class="article-username">posted by ${story.username}</small>
       </li>
     `);

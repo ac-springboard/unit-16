@@ -106,6 +106,21 @@ class StoryList {
 		const response  = await axios({ method, url, headers, data });
 		return response;
 	}
+
+	static async removeStory( storyId ){
+		const token = await localStorage.getItem("token");
+		const data = { token };
+		// const params = { storyId };
+		const method = 'DELETE';
+		const url = `${BASE_URL}/stories/${storyId}`;
+		const headers = {
+			Accept         : "*/*",
+			"Cache-Control": "no-cache",
+			"content-type" : "application/json"
+		};
+		const response  = await axios({ method, url, headers, data });
+		return response;
+	}
 }
 
 /**
@@ -126,6 +141,10 @@ class User {
 		this.ownStories = [];
 	}
 
+	setFavorites(favorites) {
+		this.favorites = favorites;
+	}
+
 	/* Create and return a new user.
 	 *
 	 * Makes POST request to API and returns newly-created user.
@@ -134,11 +153,6 @@ class User {
 	 * - password: a new password
 	 * - name: the user's full name
 	 */
-
-	setFavorites(favorites) {
-		this.favorites = favorites;
-	}
-
 	static async create(username, password, name) {
 		const response = await axios.post(`${BASE_URL}/signup`, {
 			user: {
@@ -223,6 +237,7 @@ class User {
 class Story {
 
 	/**
+	 *
 	 * The constructor is designed to take an object for better readability / flexibility
 	 * - storyObj: an object that has story properties in it
 	 */
