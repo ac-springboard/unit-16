@@ -86,20 +86,29 @@ $(async function () {
 	 */
 
 	$("body").on("click", "#nav-all", async function (e) {
-		e.preventDefault();
+		// e.preventDefault();
 		hideOrEmptyElements();
 		await generateStories();
 		$allStoriesList.show();
 	});
 
-	$('.toggle-favorite').on('click', '.fa-star', async function (e) {
+		$('.toggle-favorite').on('click', '.fa-star', async function (e) {
+			e.preventDefault();
+			clog('e.target', e.target);
+			const newClass = suitch(e.target.classList, "far", "fas");
+			const method   = newClass === 'far' ? 'DELETE' : 'POST';
+			const storyId  = e.target.parentElement.id;
+			const response = await StoryList.toggleFavorite(method, storyId);
+			currentUser.setFavorites(response.data.user.favorites);
+		});
+
+	$('#nav-my-stories').on('click', async function (e) {
 		e.preventDefault();
 		clog('e.target', e.target);
-		const newClass = suitch(e.target.classList, "far", "fas");
-		const method   = newClass === 'far' ? 'DELETE' : 'POST';
-		const storyId  = e.target.parentElement.id;
-		const response = await StoryList.toggleFavorite(method, storyId);
-		currentUser.setFavorites(response.data.user.favorites);
+		hideOrEmptyElements();
+		await generateOwnStories();
+		// $ownStories.removeClass(['hidden']);
+		$ownStories.show();
 	});
 
 	$('#nav-favorites').on('click', async (e) => {
@@ -111,19 +120,19 @@ $(async function () {
 	});
 
 	$('#nav-submit').on('click', (e) => {
-		e.preventDefault();
+		// e.preventDefault();
 		$submitForm.toggle(500, 'linear');
 	});
 
 	$submitForm.on('submit', async function (e) {
-		// e.preventDefault();
+		e.preventDefault();
 		const storyObj = {};
 		$('.add-story-input').each(function () {
 			storyObj[this.id] = this.value;
 		});
 		const newStory = await StoryList.addStory(storyObj);
 		console.log(newStory);
-		// const stopHere = true;
+		location.reload();
 	});
 
 
@@ -188,15 +197,25 @@ $(async function () {
 		// show the stories
 		$allStoriesList.empty();
 		await generateStories();
-		$('.remove-story').removeClass('hidden');
+		// $('.remove-story').removeClass('hidden');
 		$allStoriesList.show();
 
 		// update the navigation bar
 		showNavForLoggedInUser();
 	}
 
+
+
+	async function generateOwnStories(){
+		const storyList = await StoryList.getOwn( currentUser );
+		setFavorites(storyList);
+		$ownStories.empty();
+		populateHistoryListHtml( storyList, $ownStories );
+
+	}
+
 	async function generateFavorites() {
-		const storyListInstance = await StoryList.getFavorites(currentUser);
+		const storyListInstance = await StoryList.getFavorites();
 		const storyList         = storyListInstance;
 		$favoritedArticles.empty();
 		populateHistoryListHtml(storyList, $favoritedArticles);
@@ -213,17 +232,9 @@ $(async function () {
 		storyList               = storyListInstance;
 		clog('currentUser:', currentUser);
 		if (currentUser) {
-			currentUser.favorites.forEach(fav => {
-				storyList.stories.some((story) => {
-					// favStory = storyList.stories.filter( (s) => s.storyId === fav.storyId );
-					if (story.storyId === fav.storyId) {
-						story.favorite = true;
-						clog(story);
-						return;
-					}
-				});
-			});
+			setFavorites( storyList );
 		}
+
 		clog('storyList', storyList.stories);
 
 		// empty out that part of the page
@@ -238,6 +249,19 @@ $(async function () {
 		clog("$allStoriesList", $allStoriesList);
 	}
 
+	function setFavorites( storyList ){
+		currentUser.favorites.forEach(fav => {
+			storyList.stories.some((story) => {
+				// favStory = storyList.stories.filter( (s) => s.storyId === fav.storyId );
+				if (story.storyId === fav.storyId) {
+					story.favorite = true;
+					clog(story);
+					return;
+				}
+			});
+		});
+	}
+
 	function populateHistoryListHtml(storyList, $element) {
 		let result;
 		for (let story of storyList.stories) {
@@ -247,6 +271,7 @@ $(async function () {
 		if ( currentUser ) {
 			addListenerToRemoveStory();
 		}
+		const stopHere = true;
 	}
 
 	/**
@@ -290,7 +315,7 @@ $(async function () {
 			$ownStories
 		];
 		toHide.forEach($elem => $elem.hide());
-		toEmpty.forEach($elem => $elem.empty());
+		toEmpty.forEach($elem => $elem.hide());
 	}
 
 	function showNavForLoggedInUser() {

@@ -18,7 +18,6 @@ class StoryList {
 	 *  - makes a single StoryList instance out of that
 	 *  - returns the StoryList instance.*
 	 */
-
 	// TODO: Note the presence of `static` keyword: this indicates that getStories
 	// is **not** an instance method. Rather, it is a method that is called on the
 	// class directly. Why doesn't it make sense for getStories to be an instance method?
@@ -32,6 +31,12 @@ class StoryList {
 
 		// build an instance of our own class using the new array of stories
 		const storyList = new StoryList(stories);
+		return storyList;
+	}
+
+	static async getOwn( currentUser ){
+		const ownStories = currentUser.ownStories.map( story => new Story( story ));
+		const storyList = new StoryList( ownStories );
 		return storyList;
 	}
 
@@ -139,6 +144,10 @@ class User {
 		this.loginToken = "";
 		this.favorites  = [];
 		this.ownStories = [];
+	}
+
+	getOwnStories(){
+		return this.ownStories;
 	}
 
 	setFavorites(favorites) {
