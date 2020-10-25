@@ -30,14 +30,12 @@ class StoryList {
 		const stories = response.data.stories.map(story => new Story(story));
 
 		// build an instance of our own class using the new array of stories
-		const storyList = new StoryList(stories);
-		return storyList;
+		return new StoryList(stories);
 	}
 
 	static async getOwn( currentUser ){
 		const ownStories = currentUser.ownStories.map( story => new Story( story ));
-		const storyList = new StoryList( ownStories );
-		return storyList;
+		return new StoryList( ownStories );
 	}
 
 	static async getFavorites() {
@@ -60,8 +58,7 @@ class StoryList {
 			story.favorite = true;
 			return story;
 		});
-		const storyList = new StoryList(favorites);
-		return storyList;
+		return new StoryList(favorites);
 	}
 
 	static async toggleFavorite(method, storyId) {
@@ -108,8 +105,7 @@ class StoryList {
 				"Cache-Control": "no-cache",
 				"content-type" : "application/json"
 		};
-		const response  = await axios({ method, url, headers, data });
-		return response;
+		return await axios({ method, url, headers, data });
 	}
 
 	static async removeStory( storyId ){
@@ -123,8 +119,7 @@ class StoryList {
 			"Cache-Control": "no-cache",
 			"content-type" : "application/json"
 		};
-		const response  = await axios({ method, url, headers, data });
-		return response;
+		return await axios({ method, url, headers, data });
 	}
 }
 
@@ -144,10 +139,6 @@ class User {
 		this.loginToken = "";
 		this.favorites  = [];
 		this.ownStories = [];
-	}
-
-	getOwnStories(){
-		return this.ownStories;
 	}
 
 	setFavorites(favorites) {

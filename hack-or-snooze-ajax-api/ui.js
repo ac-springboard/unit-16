@@ -12,7 +12,7 @@ $(async function () {
 	const $navButtons        = $(".nav-buttons");
 
 	// global storyList variable
-	let storyList = null;
+	// let storyList = null;
 
 	// global currentUser variable
 	let currentUser = null;
@@ -32,11 +32,10 @@ $(async function () {
 		const password = $("#login-password").val();
 
 		// call the login static method to build a user instance
-		const userInstance = await User.login(username, password);
 		// set the global user to the user instance
-		currentUser        = userInstance;
+		currentUser = await User.login(username, password);
 		syncCurrentUserToLocalStorage();
-		loginAndSubmitForm();
+		await loginAndSubmitForm();
 	});
 
 	/**
@@ -53,10 +52,10 @@ $(async function () {
 		let password = $("#create-account-password").val();
 
 		// call the create method, which calls the API and then builds a new user instance
-		const newUser = await User.create(username, password, name);
-		currentUser   = newUser;
+		// currentUser;
+		await User.create(username, password, name);
 		syncCurrentUserToLocalStorage();
-		loginAndSubmitForm();
+		await loginAndSubmitForm();
 	});
 
 	/**
@@ -85,22 +84,22 @@ $(async function () {
 	 * Event handler for Navigation to Homepage
 	 */
 
-	$("body").on("click", "#nav-all", async function (e) {
+	$("body").on("click", "#nav-all", async function () {
 		// e.preventDefault();
 		hideOrEmptyElements();
 		await generateStories();
 		$allStoriesList.show();
 	});
 
-		$('.toggle-favorite').on('click', '.fa-star', async function (e) {
-			e.preventDefault();
-			clog('e.target', e.target);
-			const newClass = suitch(e.target.classList, "far", "fas");
-			const method   = newClass === 'far' ? 'DELETE' : 'POST';
-			const storyId  = e.target.parentElement.id;
-			const response = await StoryList.toggleFavorite(method, storyId);
-			currentUser.setFavorites(response.data.user.favorites);
-		});
+	$('.toggle-favorite').on('click', '.fa-star', async function (e) {
+		e.preventDefault();
+		clog('e.target', e.target);
+		const newClass = suitch(e.target.classList, "far", "fas");
+		const method   = newClass === 'far' ? 'DELETE' : 'POST';
+		const storyId  = e.target.parentElement.id;
+		const response = await StoryList.toggleFavorite(method, storyId);
+		currentUser.setFavorites(response.data.user.favorites);
+	});
 
 	$('#nav-my-stories').on('click', async function (e) {
 		e.preventDefault();
@@ -119,7 +118,7 @@ $(async function () {
 		clog($favoritedArticles);
 	});
 
-	$('#nav-submit').on('click', (e) => {
+	$('#nav-submit').on('click', () => {
 		// e.preventDefault();
 		$submitForm.toggle(500, 'linear');
 	});
@@ -135,21 +134,19 @@ $(async function () {
 		location.reload();
 	});
 
-
 	function addListenerToRemoveStory() {
-		$('.remove-story').on('mouseenter', function () {
-			this.parentElement.classList.add('highlighted-story');
-		});
-
-		$('.remove-story').on('mouseleave', function () {
-			this.parentElement.classList.remove('highlighted-story');
-		});
-
-		$('.remove-story').on('click', async function (e) {
-			e.preventDefault();
-			await StoryList.removeStory(this.parentElement.id);
-			this.parentElement.remove();
-		});
+		$('.remove-story')
+			.on('mouseenter', function () {
+				this.parentElement.classList.add('highlighted-story');
+			})
+			.on('mouseleave', function () {
+				this.parentElement.classList.remove('highlighted-story');
+			})
+			.on('click', async function (e) {
+				e.preventDefault();
+				await StoryList.removeStory(this.parentElement.id);
+				this.parentElement.remove();
+			});
 	}
 
 	// This didn't work well
@@ -204,19 +201,16 @@ $(async function () {
 		showNavForLoggedInUser();
 	}
 
-
-
-	async function generateOwnStories(){
-		const storyList = await StoryList.getOwn( currentUser );
+	async function generateOwnStories() {
+		const storyList = await StoryList.getOwn(currentUser);
 		setFavorites(storyList);
 		$ownStories.empty();
-		populateHistoryListHtml( storyList, $ownStories );
+		populateHistoryListHtml(storyList, $ownStories);
 
 	}
 
 	async function generateFavorites() {
-		const storyListInstance = await StoryList.getFavorites();
-		const storyList         = storyListInstance;
+		const storyList = await StoryList.getFavorites();
 		$favoritedArticles.empty();
 		populateHistoryListHtml(storyList, $favoritedArticles);
 	}
@@ -227,12 +221,11 @@ $(async function () {
 	 */
 	async function generateStories() {
 		// get an instance of StoryList
-		const storyListInstance = await StoryList.getStories();
+		const storyList = await StoryList.getStories();
 		// update our global variable
-		storyList               = storyListInstance;
 		clog('currentUser:', currentUser);
 		if (currentUser) {
-			setFavorites( storyList );
+			setFavorites(storyList);
 		}
 
 		clog('storyList', storyList.stories);
@@ -249,7 +242,7 @@ $(async function () {
 		clog("$allStoriesList", $allStoriesList);
 	}
 
-	function setFavorites( storyList ){
+	function setFavorites(storyList) {
 		currentUser.favorites.forEach(fav => {
 			storyList.stories.some((story) => {
 				// favStory = storyList.stories.filter( (s) => s.storyId === fav.storyId );
@@ -268,10 +261,9 @@ $(async function () {
 			result = generateStoryHTML(story);
 			$element.append(result);
 		}
-		if ( currentUser ) {
+		if (currentUser) {
 			addListenerToRemoveStory();
 		}
-		const stopHere = true;
 	}
 
 	/**
@@ -279,8 +271,8 @@ $(async function () {
 	 */
 
 	function generateStoryHTML(story) {
-		const hostName = getHostName(story.url);
-		const favClass = !currentUser ? "hidden" : story.favorite ? "fas" : "far";
+		const hostName     = getHostName(story.url);
+		const favClass     = !currentUser ? "hidden" : story.favorite ? "fas" : "far";
 		const removeHidden = !currentUser ? 'hidden' : '';
 		// 	const favClass = 'far';
 		// render story markup
