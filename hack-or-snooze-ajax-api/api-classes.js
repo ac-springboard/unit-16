@@ -18,9 +18,6 @@ class StoryList {
 	 *  - makes a single StoryList instance out of that
 	 *  - returns the StoryList instance.*
 	 */
-	// TODO: Note the presence of `static` keyword: this indicates that getStories
-	// is **not** an instance method. Rather, it is a method that is called on the
-	// class directly. Why doesn't it make sense for getStories to be an instance method?
 
 	static async getStories() {
 		// query the /stories endpoint (no auth required)
@@ -141,10 +138,6 @@ class User {
 		this.ownStories = [];
 	}
 
-	setFavorites(favorites) {
-		this.favorites = favorites;
-	}
-
 	/* Create and return a new user.
 	 *
 	 * Makes POST request to API and returns newly-created user.
@@ -171,12 +164,6 @@ class User {
 		return newUser;
 	}
 
-	/* Login in user and return user instance.
-
-	 * - username: an existing user's username
-	 * - password: an existing user's password
-	 */
-
 	static async login(username, password) {
 		const response = await axios.post(`${BASE_URL}/login`, {
 			user: {
@@ -197,6 +184,12 @@ class User {
 
 		return existingUser;
 	}
+
+	/* Login in user and return user instance.
+
+	 * - username: an existing user's username
+	 * - password: an existing user's password
+	 */
 
 	/** Get user instance for the logged-in-user.
 	 *
@@ -227,6 +220,10 @@ class User {
 		existingUser.favorites  = response.data.user.favorites.map(s => new Story(s));
 		existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
 		return existingUser;
+	}
+
+	setFavorites(favorites) {
+		this.favorites = favorites;
 	}
 }
 

@@ -11,8 +11,6 @@ $(async function () {
 	const $navLogOut         = $("#nav-logout");
 	const $navButtons        = $(".nav-buttons");
 
-	// global storyList variable
-	// let storyList = null;
 
 	// global currentUser variable
 	let currentUser = null;
@@ -52,7 +50,6 @@ $(async function () {
 		let password = $("#create-account-password").val();
 
 		// call the create method, which calls the API and then builds a new user instance
-		// currentUser;
 		await User.create(username, password, name);
 		syncCurrentUserToLocalStorage();
 		await loginAndSubmitForm();
@@ -85,7 +82,6 @@ $(async function () {
 	 */
 
 	$("body").on("click", "#nav-all", async function () {
-		// e.preventDefault();
 		hideOrEmptyElements();
 		await generateStories();
 		$allStoriesList.show();
@@ -106,7 +102,6 @@ $(async function () {
 		clog('e.target', e.target);
 		hideOrEmptyElements();
 		await generateOwnStories();
-		// $ownStories.removeClass(['hidden']);
 		$ownStories.show();
 	});
 
@@ -119,7 +114,6 @@ $(async function () {
 	});
 
 	$('#nav-submit').on('click', () => {
-		// e.preventDefault();
 		$submitForm.toggle(500, 'linear');
 	});
 
@@ -130,7 +124,7 @@ $(async function () {
 			storyObj[this.id] = this.value;
 		});
 		const newStory = await StoryList.addStory(storyObj);
-		console.log(newStory);
+		clog(newStory);
 		location.reload();
 	});
 
@@ -148,11 +142,6 @@ $(async function () {
 				this.parentElement.remove();
 			});
 	}
-
-	// This didn't work well
-	// $('.remove-story').on('mouseleave', function(){
-	// 	this.parentElement.classList.toggle('highlighted-story');
-	// });
 
 	/**
 	 * On page load, checks local storage to see if the user is already logged in.
@@ -173,7 +162,6 @@ $(async function () {
 		if (currentUser) {
 			showNavForLoggedInUser();
 			$navButtons.show();
-			// $('.remove-story').removeClass('hidden');
 		}
 	}
 
@@ -194,7 +182,6 @@ $(async function () {
 		// show the stories
 		$allStoriesList.empty();
 		await generateStories();
-		// $('.remove-story').removeClass('hidden');
 		$allStoriesList.show();
 
 		// update the navigation bar
@@ -235,21 +222,15 @@ $(async function () {
 
 		// loop through all of our stories and generate HTML for them
 		populateHistoryListHtml(storyList, $allStoriesList);
-		// for (let story of storyList.stories) {
-		// 	const result = generateStoryHTML(story);
-		// 	$allStoriesList.append(result);
-		// }
 		clog("$allStoriesList", $allStoriesList);
 	}
 
 	function setFavorites(storyList) {
 		currentUser.favorites.forEach(fav => {
 			storyList.stories.some((story) => {
-				// favStory = storyList.stories.filter( (s) => s.storyId === fav.storyId );
 				if (story.storyId === fav.storyId) {
 					story.favorite = true;
 					clog(story);
-					return;
 				}
 			});
 		});
@@ -274,7 +255,6 @@ $(async function () {
 		const hostName     = getHostName(story.url);
 		const favClass     = !currentUser ? "hidden" : story.favorite ? "fas" : "far";
 		const removeHidden = !currentUser ? 'hidden' : '';
-		// 	const favClass = 'far';
 		// render story markup
 		const storyMarkup = $(`
       <li id="${story.storyId}">
